@@ -1,0 +1,456 @@
+<!doctype html>
+<!--
+  ============================================================
+  POSTAL PARA MIMAR — cómo poner las fotos
+  ============================================================
+  1. Crea una carpeta "fotos" junto a este archivo.
+  2. Guarda ahí tus fotos con estos nombres EXACTOS:
+
+     fotos/foto-1.jpg      → primer recuerdo   (id="foto-1")
+     fotos/foto-2.jpg      → segundo recuerdo  (id="foto-2")
+     fotos/foto-3.jpg      → tercer recuerdo   (id="foto-3")
+     fotos/foto-4.jpg      → cuarto recuerdo   (id="foto-4")
+     fotos/foto-final.jpg  → foto del final    (id="foto-final")
+
+  - Si una foto no existe, aparece un recuadro rosado con el nombre
+    del archivo que falta (así sabes cuál te falta).
+  - Los textos debajo de cada foto están en las etiquetas class="pie".
+  - Para añadir más recuerdos: copia un bloque <figure class="polaroid">
+    completo y cambia el número (foto-5, etc.).
+  - Fotos cuadradas o verticales se ven mejor. Pésalas < 500 KB cada una
+    para que cargue rápido con datos móviles.
+  - Los textos largos (chistes, mensaje final) se editan en CONFIG,
+    al final del archivo.
+  ============================================================
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>💌 Tienes una postal</title>
+<meta property="og:title" content="💌 Tienes una postal sin abrir">
+<meta property="og:description" content="Para: Mimar · Abrir con cuidado (y con sonrisa)">
+<meta name="theme-color" content="#ffc2d4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rosa:#ff8fb1; --rosa-claro:#ffd6e3; --crema:#fff7f2; --fucsia:#e0457b;
+  --vino:#8a1f4c; --mar:#2ec4b6; --tinta:#3b2433;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'DM Sans',system-ui,sans-serif;color:var(--tinta);background:linear-gradient(160deg,#ffe8ef 0%,#ffc9d9 55%,#ffb3c9 100%);overflow:hidden;-webkit-tap-highlight-color:transparent}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;padding:28px 16px;opacity:0;pointer-events:none;transform:translateY(24px);transition:opacity .7s,transform .7s;overflow-y:auto;overflow-x:hidden}
+.screen.active{opacity:1;pointer-events:auto;transform:none}
+.wrap{width:100%;max-width:420px;margin:auto}
+.mano{font-family:'Caveat',cursive}
+h1{font-family:'Caveat',cursive;font-weight:700;font-size:40px;line-height:1.05;color:var(--vino);text-align:center;margin-bottom:6px}
+.sub{text-align:center;opacity:.75;margin-bottom:22px;line-height:1.4}
+.hidden{display:none!important}
+.btn{display:block;width:100%;padding:16px;border:0;border-radius:999px;background:var(--fucsia);color:#fff;font:700 17px 'DM Sans',sans-serif;margin-top:20px;cursor:pointer;box-shadow:0 6px 0 var(--vino);transition:transform .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 3px 0 var(--vino)}
+.btn.suave{background:#fff;color:var(--fucsia);box-shadow:0 6px 0 #f3b7ca}
+
+/* ---------- 1. Sobre ---------- */
+.sobre{position:relative;width:100%;aspect-ratio:3/2;margin:30px 0 10px;cursor:pointer;perspective:900px}
+.sobre .fondo{position:absolute;inset:0;background:#f7a3be;border-radius:12px;box-shadow:0 22px 50px rgba(138,31,76,.3)}
+.sobre .carta{position:absolute;left:6%;right:6%;top:8%;height:84%;background:var(--crema);border-radius:8px;padding:16px;z-index:1;transition:transform .9s .45s;display:flex;align-items:flex-start;justify-content:center;font:700 26px 'Caveat',cursive;color:var(--vino)}
+.sobre .bolsillo{position:absolute;inset:0;z-index:2;background:#ffbccf;border-radius:12px;clip-path:polygon(0 0,50% 58%,100% 0,100% 100%,0 100%)}
+.sobre .solapa{position:absolute;left:0;right:0;top:0;height:62%;z-index:3;background:#f48fb1;border-radius:12px 12px 0 0;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .6s,z-index 0s .3s}
+.sobre .destinatario{position:absolute;left:0;right:0;bottom:12%;z-index:3;text-align:center;font:700 30px 'Caveat',cursive;color:var(--vino)}
+.sobre .sello{position:absolute;left:50%;top:62%;width:66px;height:66px;margin:-33px 0 0 -33px;z-index:4;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff6f9e,#b3154f);display:grid;place-items:center;font-size:28px;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.25);animation:latido 1.4s infinite;transition:opacity .3s}
+@keyframes latido{0%,100%{transform:scale(1)}15%{transform:scale(1.12)}30%{transform:scale(1)}45%{transform:scale(1.08)}}
+.sobre.abierto .solapa{transform:rotateX(180deg);z-index:0}
+.sobre.abierto .sello{opacity:0}
+.sobre.abierto .carta{transform:translateY(-48%)}
+.tip{text-align:center;font:600 14px 'DM Sans';opacity:.65;margin-top:16px}
+
+/* ---------- 2. Recuerdos (polaroids) ---------- */
+.pila{position:relative;height:calc(min(100vw - 32px,420px) * .82 + 80px);margin:8px 0 6px}
+.polaroid{position:absolute;left:50%;top:0;width:82%;background:#fff;padding:12px 12px 8px;border-radius:4px;box-shadow:0 14px 30px rgba(138,31,76,.25);transform:translateX(-50%) rotate(var(--r,0deg));transition:transform .7s cubic-bezier(.5,-.3,.6,1),opacity .7s}
+.polaroid.fuera{transform:translate(90%,-40px) rotate(28deg);opacity:0;pointer-events:none}
+.marco{position:relative;aspect-ratio:1;background:var(--rosa-claro);overflow:hidden}
+.marco img{width:100%;height:100%;object-fit:cover;display:block}
+.marco.sin-foto img{display:none}
+.marco.sin-foto::after{content:"Agrega aquí\A" attr(data-foto);white-space:pre;position:absolute;inset:10px;display:grid;place-items:center;text-align:center;border:2px dashed var(--rosa);border-radius:6px;font:600 14px 'DM Sans';color:var(--fucsia)}
+.pie{font:700 24px 'Caveat',cursive;text-align:center;margin-top:8px;line-height:1.1;min-height:28px}
+.chiste{background:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 8px 20px rgba(138,31,76,.12);position:relative;min-height:70px;font-size:15px;line-height:1.4}
+.chiste::before{content:"Chiste malo #" attr(data-n);display:block;font:700 11px 'DM Sans';letter-spacing:.12em;text-transform:uppercase;color:var(--fucsia);margin-bottom:4px}
+.chiste .rem{display:block;margin-top:4px;font-weight:700;opacity:0;transition:opacity .4s}
+.chiste.ver .rem{opacity:1}
+
+/* ---------- 3. Postal ---------- */
+.postal{width:100%;aspect-ratio:3/2;perspective:1300px;cursor:pointer;margin-top:6px}
+.postal-in{position:relative;width:100%;height:100%;transition:transform 1s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+.postal.volteada .postal-in{transform:rotateY(180deg)}
+.cara{position:absolute;inset:0;border-radius:12px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 22px 50px rgba(138,31,76,.3)}
+.frente{background:linear-gradient(180deg,#ffa9c4 0%,#ffcf9f 50%,#3fc1c9 50%,#1b8796 100%)}
+.frente .sol{position:absolute;left:50%;top:50%;width:34%;aspect-ratio:1;border-radius:50%;background:#ffe6a3;transform:translate(-50%,-62%);box-shadow:0 0 40px #ffe6a3}
+.frente .olas{position:absolute;left:0;right:0;top:48%;height:52%}
+.frente .saludo{position:absolute;left:0;right:0;top:9%;text-align:center;color:#fff;text-shadow:0 2px 8px rgba(138,31,76,.35)}
+.frente .saludo span{display:block;font:700 26px 'Caveat',cursive}
+.frente .saludo b{display:block;font:800 clamp(30px,10vw,46px)/1 'Fraunces',serif;letter-spacing:.02em}
+.estampilla{position:absolute;right:12px;top:12px;width:48px;height:58px;background:#fff;padding:4px;border:2px dashed var(--rosa);transform:rotate(6deg);display:grid;place-items:center;font-size:24px}
+.frente .toca{position:absolute;left:0;right:0;bottom:10px;text-align:center;color:#fff;font:600 13px 'DM Sans';opacity:.9}
+.reverso{transform:rotateY(180deg);background:var(--crema);display:grid;grid-template-columns:1.35fr 1fr;padding:16px 14px;gap:12px;background-image:repeating-linear-gradient(transparent 0 27px,#f6d3de 27px 28px)}
+.reverso .texto{font:600 clamp(17px,5vw,21px)/1.25 'Caveat',cursive;color:var(--vino);border-right:2px solid #f3b7ca;padding-right:10px;overflow:hidden}
+.reverso .dir{position:relative;font:600 clamp(15px,4.3vw,19px)/1.9 'Caveat',cursive;padding-top:62px}
+.reverso .estampilla{right:4px;top:0}
+.pregunta{text-align:center;margin-top:22px;opacity:0;transition:opacity .6s;pointer-events:none}
+.pregunta.ver{opacity:1;pointer-events:auto}
+.pregunta p{font:700 32px 'Caveat',cursive;color:var(--vino)}
+.opciones{display:flex;gap:10px;margin-top:6px}
+.opciones .btn{margin-top:10px}
+#btnNo{width:auto;padding:10px 18px;font-size:14px;background:#fff;color:var(--tinta);box-shadow:none;border:2px solid #f3b7ca;margin:14px auto 0;transition:left .25s,top .25s;z-index:40}
+
+/* ---------- 4. Final ---------- */
+.msg{white-space:pre-line;font:600 22px/1.35 'Caveat',cursive;color:var(--tinta);background:var(--crema);padding:18px;border-radius:14px;box-shadow:0 10px 26px rgba(138,31,76,.15);margin:12px 0 22px;min-height:180px}
+.pase{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 20px 44px rgba(138,31,76,.28)}
+.pase-top{background:var(--fucsia);color:#fff;padding:12px 18px;display:flex;justify-content:space-between;font:700 12px 'DM Sans';letter-spacing:.14em}
+.ruta{display:flex;align-items:center;gap:10px;padding:20px 18px 4px}
+.punto{text-align:center;min-width:80px}
+.cod{font:800 40px/1 'Fraunces',serif;color:var(--vino)}
+.ciu{font-size:12px;opacity:.65;margin-top:4px}
+.linea{flex:1;border-top:2px dashed #f3b7ca;position:relative}
+.linea span{position:absolute;left:50%;top:-16px;font-size:22px;animation:vuela 2.6s ease-in-out infinite}
+@keyframes vuela{0%,100%{transform:translate(-90%,0)}50%{transform:translate(-10%,-4px)}}
+.campos{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 18px 16px}
+.etq{font-size:10px;text-transform:uppercase;letter-spacing:.14em;opacity:.55}
+.dato{font:700 15px 'DM Sans';margin-top:2px}
+.corte{border-top:2px dashed #f3b7ca;margin:0 14px}
+.corazones{padding:14px 18px 18px;text-align:center;letter-spacing:6px;font-size:18px;color:var(--rosa)}
+.cuenta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:22px 0 4px}
+.cuenta div{background:rgba(255,255,255,.7);border-radius:14px;padding:10px 4px;text-align:center}
+.cuenta b{display:block;font:800 26px 'Fraunces',serif;color:var(--vino)}
+.cuenta span{font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.08em}
+.cuenta-lbl{text-align:center;font:700 20px 'Caveat',cursive;color:var(--vino)}
+.polaroid.sola{position:relative;left:auto;transform:rotate(-3deg);margin:30px auto 10px;width:82%}
+.terminos{font-size:11px;line-height:1.45;opacity:.6;text-align:center;margin-top:24px}
+.firma{text-align:center;font:700 28px 'Caveat',cursive;color:var(--vino);margin:18px 0 10px}
+#confeti{position:fixed;inset:0;pointer-events:none;z-index:50}
+</style>
+</head>
+<body>
+
+<!-- ====================== 1. SOBRE ====================== -->
+<section class="screen active" id="s1"><div class="wrap">
+  <h1>Llegó correo para ti 💌</h1>
+  <p class="sub">Remitente: alguien que te quiere demasiado</p>
+  <div class="sobre" id="sobre">
+    <div class="fondo"></div>
+    <div class="carta">Para ti, <span id="apodoCarta"></span></div>
+    <div class="bolsillo"></div>
+    <div class="solapa"></div>
+    <div class="destinatario" id="destinatario"></div>
+    <div class="sello">♥</div>
+  </div>
+  <p class="tip">Toca el sello para abrir</p>
+</div></section>
+
+<!-- ====================== 2. RECUERDOS ====================== -->
+<section class="screen" id="s2"><div class="wrap">
+  <h1 id="tituloRecuerdos"></h1>
+  <p class="sub">Antes de tu sorpresa, repasemos un poquito de lo nuestro</p>
+
+  <div class="pila" id="pila">
+    <!-- 📸 RECUERDO 1 -->
+    <figure class="polaroid" id="recuerdo-1">
+      <div class="marco" data-foto="fotos/foto-1.jpg">
+        <img id="foto-1" src="fotos/foto-1.jpg" alt="Recuerdo 1" onerror="this.parentElement.classList.add('sin-foto')">
+      </div>
+      <figcaption class="pie">Aquí empezó todo ♡</figcaption>
+    </figure>
+
+    <!-- 📸 RECUERDO 2 -->
+    <figure class="polaroid" id="recuerdo-2">
+      <div class="marco" data-foto="fotos/foto-2.jpg">
+        <img id="foto-2" src="fotos/foto-2.jpg" alt="Recuerdo 2" onerror="this.parentElement.classList.add('sin-foto')">
+      </div>
+      <figcaption class="pie">Tu risa, mi lugar favorito</figcaption>
+    </figure>
+
+    <!-- 📸 RECUERDO 3 -->
+    <figure class="polaroid" id="recuerdo-3">
+      <div class="marco" data-foto="fotos/foto-3.jpg">
+        <img id="foto-3" src="fotos/foto-3.jpg" alt="Recuerdo 3" onerror="this.parentElement.classList.add('sin-foto')">
+      </div>
+      <figcaption class="pie">Contigo todo es mejor</figcaption>
+    </figure>
+
+    <!-- 📸 RECUERDO 4 -->
+    <figure class="polaroid" id="recuerdo-4">
+      <div class="marco" data-foto="fotos/foto-4.jpg">
+        <img id="foto-4" src="fotos/foto-4.jpg" alt="Recuerdo 4" onerror="this.parentElement.classList.add('sin-foto')">
+      </div>
+      <figcaption class="pie">Y lo que nos falta…</figcaption>
+    </figure>
+  </div>
+
+  <div class="chiste" id="chiste" data-n="1"><span id="chistePregunta"></span><span class="rem" id="chisteRemate"></span></div>
+  <button class="btn" id="btnSiguiente">Siguiente recuerdo →</button>
+</div></section>
+
+<!-- ====================== 3. POSTAL ====================== -->
+<section class="screen" id="s3"><div class="wrap">
+  <h1>Te llegó una postal ✨</h1>
+  <p class="sub">Tócala para darle la vuelta</p>
+
+  <div class="postal" id="postal">
+    <div class="postal-in">
+      <!-- Frente -->
+      <div class="cara frente">
+        <div class="sol"></div>
+        <svg class="olas" viewBox="0 0 400 200" preserveAspectRatio="none">
+          <path d="M0 20 Q50 0 100 20 T200 20 T300 20 T400 20 V200 H0Z" fill="#5fd3d1" opacity=".7"/>
+          <path d="M0 55 Q50 35 100 55 T200 55 T300 55 T400 55 V200 H0Z" fill="#2ab0ba" opacity=".8"/>
+          <path d="M0 95 Q50 75 100 95 T200 95 T300 95 T400 95 V200 H0Z" fill="#1b8796"/>
+          <path d="M0 150 Q100 120 200 145 T400 140 V200 H0Z" fill="#f7dcb6"/>
+        </svg>
+        <div class="saludo"><span>Saludos desde</span><b id="ciudadPostal"></b></div>
+        <div class="estampilla">🌺</div>
+        <div class="toca">toca para voltear ↺</div>
+      </div>
+      <!-- Reverso -->
+      <div class="cara reverso">
+        <div class="texto" id="textoPostal"></div>
+        <div class="dir">
+          <div class="estampilla">💗</div>
+          <div>Para: <span id="paraPostal"></span></div>
+          <div>Dir: mi corazón</div>
+          <div>Ciudad: donde tú estés</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pregunta" id="pregunta">
+    <p>¿Te vienes conmigo?</p>
+    <div class="opciones">
+      <button class="btn" data-si>Sí 💕</button>
+      <button class="btn suave" data-si>Obvio que sí</button>
+    </div>
+    <button class="btn" id="btnNo">No</button>
+  </div>
+</div></section>
+
+<!-- ====================== 4. FINAL ====================== -->
+<section class="screen" id="s4"><div class="wrap">
+  <h1 id="tituloFinal"></h1>
+  <div class="msg" id="msg"></div>
+
+  <div class="pase">
+    <div class="pase-top"><span id="aerolinea"></span><span>PASE DE ABORDAR ♡</span></div>
+    <div class="ruta">
+      <div class="punto"><div class="cod" id="oCod"></div><div class="ciu" id="oCiu"></div></div>
+      <div class="linea"><span>✈️</span></div>
+      <div class="punto"><div class="cod" id="dCod"></div><div class="ciu" id="dCiu"></div></div>
+    </div>
+    <div class="campos">
+      <div><div class="etq">Pasajeros</div><div class="dato" id="pasajeros"></div></div>
+      <div><div class="etq">Asiento</div><div class="dato">Junto a ti</div></div>
+      <div><div class="etq">Fecha</div><div class="dato" id="fecha"></div></div>
+      <div><div class="etq">Salida</div><div class="dato" id="hora"></div></div>
+    </div>
+    <div class="corte"></div>
+    <div class="corazones">♥ ♥ ♥ ♥ ♥ ♥ ♥</div>
+  </div>
+
+  <div class="cuenta" id="cuenta">
+    <div><b id="cd">0</b><span>días</span></div>
+    <div><b id="ch">0</b><span>horas</span></div>
+    <div><b id="cm">0</b><span>min</span></div>
+    <div><b id="cs">0</b><span>seg</span></div>
+  </div>
+  <p class="cuenta-lbl" id="cuentaLbl">para ver el mar juntos</p>
+
+  <!-- 📸 FOTO FINAL -->
+  <figure class="polaroid sola" id="recuerdo-final">
+    <div class="marco" data-foto="fotos/foto-final.jpg">
+      <img id="foto-final" src="fotos/foto-final.jpg" alt="Nosotros" onerror="this.parentElement.classList.add('sin-foto')">
+    </div>
+    <figcaption class="pie">El próximo recuerdo: frente al mar</figcaption>
+  </figure>
+
+  <p class="terminos" id="terminos"></p>
+  <p class="firma" id="firma"></p>
+</div></section>
+
+<canvas id="confeti"></canvas>
+
+<script>
+/* =========================================================
+   ✏️  TEXTOS — edita aquí
+   ========================================================= */
+const CONFIG = {
+  para: "Mimar",
+  apodo: "mi amor",
+  de: "Juan",
+
+  vuelo: {
+    aerolinea: "LATAM",
+    origen:  { codigo: "BOG", ciudad: "Bogotá" },      // verifica que sea tu ciudad de salida
+    destino: { codigo: "SMR", ciudad: "Santa Marta" },
+    fecha: "2026-11-06T18:10:00-05:00",
+    pasajeros: "Mar & Juan"
+    // ⚠️ NO pongas aquí el código de reserva ni el link de LATAM.
+  },
+
+  // Un chiste malo por cada foto (pregunta + remate)
+  chistes: [
+    ["¿Por qué los peces no usan computador?", "Porque le tienen miedo a la red. 🐟"],
+    ["¿Qué le dijo el mar a la playa?", "Nada, solo la saludó con una ola. 👋🌊"],
+    ["¿Cuál es el pez que más huele?", "El peztoso. 🐠 (perdón)"],
+    ["¿Qué hace un pez en el gimnasio?", "Nada. 🏊 Igual que yo en vacaciones."]
+  ],
+
+  textoPostal:
+`Mi amor:
+Sé que llevas mucho tiempo soñando con el mar.
+Esta vez no va a ser un sueño.`,
+
+  mensajeFinal:
+`Mi amor:
+
+Sé cuánto tiempo llevas soñando con ver el mar, y quería ser yo quien te lo cumpliera.
+
+Prepara el bloqueador, el vestido de baño y la paciencia, porque vas a tener 100% de mi compañía y 0% de descanso de mis chistes malos.
+
+Te amo, mi vida.`,
+
+  terminos:
+    "Términos y condiciones: al aceptar este viaje aceptas chistes malos ilimitados, fotos en todos los atardeceres y abrazos no negociables. No se aceptan devoluciones del novio."
+};
+/* ========================================================= */
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const vib = p => { try { navigator.vibrate && navigator.vibrate(p); } catch(e){} };
+const C = CONFIG;
+
+function go(id, cb){
+  $$('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  $(id).scrollTop = 0;
+  if (cb) setTimeout(cb, 120);
+}
+
+/* Relleno */
+$('#apodoCarta').textContent = C.apodo + ' ♡';
+$('#destinatario').textContent = 'Para: ' + C.para + ' ♡';
+$('#tituloRecuerdos').textContent = 'Hola, ' + C.apodo;
+$('#ciudadPostal').textContent = C.vuelo.destino.ciudad.toUpperCase();
+$('#textoPostal').textContent = C.textoPostal;
+$('#paraPostal').textContent = C.para;
+
+/* 1. Sobre */
+$('#sobre').addEventListener('click', function(){
+  if (this.classList.contains('abierto')) return;
+  this.classList.add('abierto'); vib(40);
+  setTimeout(() => go('#s2', mostrarChiste), 1700);
+});
+
+/* 2. Recuerdos */
+const fotos = $$('#pila .polaroid');
+fotos.forEach((p, i) => {
+  p.style.zIndex = fotos.length - i;
+  p.style.setProperty('--r', ((i % 2 ? 1 : -1) * (2 + i * 1.5)) + 'deg');
+});
+let idx = 0;
+function mostrarChiste(){
+  const ch = C.chistes[idx % C.chistes.length], box = $('#chiste');
+  box.classList.remove('ver');
+  box.dataset.n = idx + 1;
+  $('#chistePregunta').textContent = ch[0];
+  $('#chisteRemate').textContent = ch[1];
+  setTimeout(() => box.classList.add('ver'), 1600);
+  $('#btnSiguiente').textContent = idx < fotos.length - 1 ? 'Siguiente recuerdo →' : 'Hay algo más… 👀';
+}
+$('#btnSiguiente').addEventListener('click', () => {
+  if (idx < fotos.length - 1){
+    fotos[idx].classList.add('fuera'); idx++; vib(20); mostrarChiste();
+  } else {
+    go('#s3');
+  }
+});
+
+/* 3. Postal */
+let volteada = false;
+$('#postal').addEventListener('click', function(){
+  volteada = !volteada;
+  this.classList.toggle('volteada', volteada); vib(30);
+  if (volteada) setTimeout(() => $('#pregunta').classList.add('ver'), 900);
+});
+$$('[data-si]').forEach(b => b.addEventListener('click', () => {
+  $('#btnNo').style.display = 'none';
+  go('#s4', final);
+}));
+
+/* El botón "No" que huye */
+const frasesNo = ['No', '¿Segura?', 'Piénsalo 🥺', 'Error 404', 'Esa opción no existe', 'Nop 🙃'];
+let intentos = 0;
+function huir(e){
+  e.preventDefault(); e.stopPropagation();
+  const b = $('#btnNo');
+  b.style.position = 'fixed';
+  b.style.left = (16 + Math.random() * Math.max(0, innerWidth - b.offsetWidth - 32)) + 'px';
+  b.style.top  = (80 + Math.random() * Math.max(0, innerHeight - b.offsetHeight - 160)) + 'px';
+  b.textContent = frasesNo[++intentos % frasesNo.length];
+  vib(15);
+}
+['pointerenter', 'pointerdown', 'click'].forEach(ev => $('#btnNo').addEventListener(ev, huir));
+
+/* 4. Final */
+function final(){
+  lluvia(); vib([100, 60, 200]);
+  const v = C.vuelo, f = new Date(v.fecha);
+  $('#tituloFinal').textContent = 'Nos vamos al mar, ' + C.apodo + ' 🌊';
+  $('#aerolinea').textContent = v.aerolinea.toUpperCase();
+  $('#oCod').textContent = v.origen.codigo;  $('#oCiu').textContent = v.origen.ciudad;
+  $('#dCod').textContent = v.destino.codigo; $('#dCiu').textContent = v.destino.ciudad;
+  $('#pasajeros').textContent = v.pasajeros;
+  $('#fecha').textContent = f.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+  $('#hora').textContent = f.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' });
+  $('#terminos').textContent = C.terminos;
+  $('#firma').textContent = 'Con todo mi amor, ' + C.de + ' ♡';
+  escribir($('#msg'), C.mensajeFinal);
+  tick(); setInterval(tick, 1000);
+}
+function escribir(el, texto, vel = 32){
+  el.textContent = ''; let i = 0;
+  const iv = setInterval(() => { el.textContent += texto[i++]; if (i >= texto.length) clearInterval(iv); }, vel);
+}
+function tick(){
+  let s = Math.max(0, Math.floor((new Date(C.vuelo.fecha) - new Date()) / 1000));
+  if (s === 0){ $('#cuenta').classList.add('hidden'); $('#cuentaLbl').textContent = '¡Hoy vemos el mar! 🌊'; return; }
+  $('#cd').textContent = Math.floor(s / 86400); s %= 86400;
+  $('#ch').textContent = Math.floor(s / 3600);  s %= 3600;
+  $('#cm').textContent = Math.floor(s / 60);
+  $('#cs').textContent = s % 60;
+}
+
+/* Lluvia de corazones */
+function lluvia(){
+  const cv = $('#confeti'), x = cv.getContext('2d');
+  cv.width = innerWidth; cv.height = innerHeight;
+  const emojis = ['💗', '💖', '🌸', '🌊', '✨', '🐚'];
+  const ps = Array.from({ length: 90 }, () => ({
+    x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight,
+    vy: 2 + Math.random() * 3, vx: (Math.random() - .5) * 1.2,
+    s: 16 + Math.random() * 18, e: emojis[Math.random() * emojis.length | 0],
+    a: Math.random() * 6, va: (Math.random() - .5) * .05
+  }));
+  let t = 0;
+  (function f(){
+    x.clearRect(0, 0, cv.width, cv.height);
+    ps.forEach(p => {
+      p.y += p.vy; p.x += p.vx + Math.sin(t / 20 + p.a); p.a += p.va;
+      x.save(); x.translate(p.x, p.y); x.rotate(p.a / 3);
+      x.font = p.s + 'px serif'; x.fillText(p.e, 0, 0); x.restore();
+    });
+    if (++t < 420) requestAnimationFrame(f); else x.clearRect(0, 0, cv.width, cv.height);
+  })();
+}
+</script>
+</body>
+</html>
